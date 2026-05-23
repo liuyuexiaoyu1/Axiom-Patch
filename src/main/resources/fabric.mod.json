@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "axiom-patch",
+  "version": "${version}",
+  "name": "axiom-patch",
+  "description": "Liuyue's mod",
+  "authors": ["Liuyue_awa"],
+  "license": "All-Rights-Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "preLaunch": [
+      "com.liuyue.axiomPatch.AxiomPatch"
+    ]
+  },
+  "mixins": [
+    "axiom-patch.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "minecraft": "*",
+    "axiom": "*"
+  }
+}
