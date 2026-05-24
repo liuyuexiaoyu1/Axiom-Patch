@@ -3,13 +3,14 @@
   "id": "axiom-patch",
   "version": "${version}",
   "name": "axiom-patch",
-  "description": "Liuyue's mod",
-  "authors": ["Liuyue_awa"],
+  "description": "Make Axiom free",
+  "authors": [],
   "license": "All-Rights-Reserved",
   "environment": "*",
+  "icon": "icon.png",
   "entrypoints": {
     "preLaunch": [
-      "com.liuyue.axiomPatch.AxiomPatch"
+      "com.axiom.axiomPatch.AxiomPatch"
     ]
   },
   "mixins": [

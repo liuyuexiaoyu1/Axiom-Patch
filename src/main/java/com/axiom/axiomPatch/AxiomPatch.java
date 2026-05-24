@@ -1,4 +1,4 @@
-package com.liuyue.axiomPatch;
+package com.axiom.axiomPatch;
 
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import org.slf4j.Logger;

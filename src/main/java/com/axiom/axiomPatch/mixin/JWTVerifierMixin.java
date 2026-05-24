@@ -1,8 +1,8 @@
-package com.liuyue.axiomPatch.mixin;
+package com.axiom.axiomPatch.mixin;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Claim;
-import com.liuyue.axiomPatch.AxiomPatch;
+import com.axiom.axiomPatch.AxiomPatch;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
