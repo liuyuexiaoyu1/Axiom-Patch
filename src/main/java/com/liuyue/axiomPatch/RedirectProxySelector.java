@@ -27,7 +27,7 @@ public class RedirectProxySelector extends ProxySelector {
             mockServer.start();
             AxiomPatch.LOGGER.info("[Axiom-Patch] 本地重定向服务器已在端口 {} 启动。", port);
         } catch (IOException e) {
-            System.err.println("[Axiom-Patch] 本地重定向服务器启动失败: " + e.getMessage());
+            AxiomPatch.LOGGER.info("[Axiom-Patch] 本地重定向服务器启动失败: " + e.getMessage());
         }
 
         this.localHttpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", port));
