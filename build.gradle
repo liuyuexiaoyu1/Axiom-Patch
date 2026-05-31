@@ -32,6 +32,9 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    mavenCentral() {
+        url = "https://mvnrepository.com/"
+    }
     mavenCentral()
 }
 
@@ -41,7 +44,7 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    modImplementation files('libs/Axiom-5.4.2-for-MC1.21.1.jar')
+    implementation("com.auth0:java-jwt:4.5.2")
 }
 
 processResources {
