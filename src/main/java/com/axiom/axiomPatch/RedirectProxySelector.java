@@ -1,42 +1,50 @@
 package com.axiom.axiomPatch;
 
-import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpExchange;
-
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
 public class RedirectProxySelector extends ProxySelector {
 
-    private final ProxySelector originalSelector;
-    private final Proxy localHttpProxy;
+    private static RedirectProxySelector INSTANCE;
 
-    public RedirectProxySelector() {
+    private final ProxySelector originalSelector;
+    private final Proxy localProxy;
+    private final LocalProxyServer proxyServer;
+
+    public RedirectProxySelector(SSLContext sslContext) {
         this.originalSelector = ProxySelector.getDefault();
 
-        int port = 45455;
+        int port = 0;
+        LocalProxyServer server = null;
         try {
-            HttpServer mockServer = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-            mockServer.createContext("/", new MockHttpHandler());
-            mockServer.setExecutor(null);
-            mockServer.start();
-            AxiomPatch.LOGGER.info("[Axiom-Patch] 本地重定向服务器已在端口 {} 启动。", port);
+            server = new LocalProxyServer(port, sslContext);
+            server.start();
+            port = server.getPort();
         } catch (IOException e) {
-            AxiomPatch.LOGGER.info("[Axiom-Patch] 本地重定向服务器启动失败: " + e.getMessage());
+            AxiomPatch.LOGGER.error("本地代理服务器启动失败: {}", e.getMessage());
         }
+        this.proxyServer = server;
 
-        this.localHttpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", port));
+        this.localProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", port));
     }
 
-    public static void inject() {
+    public static void inject(SSLContext sslContext) {
         if (!(ProxySelector.getDefault() instanceof RedirectProxySelector)) {
-            ProxySelector.setDefault(new RedirectProxySelector());
-            AxiomPatch.LOGGER.info("[Axiom-Patch] 代理重定向选择器已成功挂载");
+            RedirectProxySelector selector = new RedirectProxySelector(sslContext);
+            ProxySelector.setDefault(selector);
+            INSTANCE = selector;
+            AxiomPatch.LOGGER.info("代理重定向选择器已成功挂载");
+        }
+    }
+
+    /** 停止代理服务器，释放端口 */
+    public static void shutdown() {
+        RedirectProxySelector sel = INSTANCE;
+        if (sel != null && sel.proxyServer != null) {
+            sel.proxyServer.stop();
         }
     }
 
@@ -45,7 +53,7 @@ public class RedirectProxySelector extends ProxySelector {
         if (uri != null && uri.getHost() != null) {
             String host = uri.getHost().toLowerCase();
             if (host.contains("axiom.moulberry.com")) {
-                return Collections.singletonList(localHttpProxy);
+                return Collections.singletonList(localProxy);
             }
         }
         return originalSelector != null ? originalSelector.select(uri) : Collections.singletonList(Proxy.NO_PROXY);
@@ -55,31 +63,6 @@ public class RedirectProxySelector extends ProxySelector {
     public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
         if (originalSelector != null) {
             originalSelector.connectFailed(uri, sa, ioe);
-        }
-    }
-
-    private static class MockHttpHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String path = exchange.getRequestURI().toString();
-            String response;
-
-            if (path.contains("meta")) {
-                response = "{"
-                        + "\"latest_mod_version\":\"1.0.0\","
-                        + "\"mod_disabled\":\"false\","
-                        + "\"latest_changelog\":[\"Axiom-Patch Redirected via ProxySelector\"],"
-                        + "\"test\":false"
-                        + "}";
-            } else {
-                response = "header.payload.signature_placeholder";
-            }
-
-            byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
-            exchange.sendResponseHeaders(200, bytes.length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(bytes);
-            }
         }
     }
 }
