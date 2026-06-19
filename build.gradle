@@ -42,7 +42,7 @@ dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    implementation "com.auth0:java-jwt:4.5.2"
+    compileOnly "com.auth0:java-jwt:4.5.2"
 }
 
 processResources {
