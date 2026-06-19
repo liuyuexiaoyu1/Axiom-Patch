@@ -44,7 +44,7 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    implementation("com.auth0:java-jwt:4.5.2")
+    compileOnly("com.auth0:java-jwt:4.5.2")
 }
 
 processResources {
@@ -84,13 +84,6 @@ java {
 }
 
 jar {
-    manifest {
-        attributes(
-                'Premain-Class': 'com.liuyue.axiomPatch.agent.AxiomPatchAgent',
-                'Can-Retransform-Classes': 'true',
-                'Can-Redefine-Classes': 'true'
-        )
-    }
     from("LICENSE") {
         rename { "${it}_${project.archives_base_name}" }
     }

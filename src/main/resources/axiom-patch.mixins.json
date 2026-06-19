@@ -1,11 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.liuyue.axiomPatch.mixin",
+  "package": "com.axiom.axiomPatch.mixin",
   "compatibilityLevel": "JAVA_21",
   "priority": 0,
   "mixins": [
-    "com.axiom.axiomPatch.mixin.JWTVerifierMixin"
+    "JWTVerifierMixin"
   ],
   "injectors": {
     "defaultRequire": 1
